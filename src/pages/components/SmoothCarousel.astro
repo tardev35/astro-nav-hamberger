@@ -38,42 +38,58 @@ const displayImages = [...images, ...images, ...images];
 </div>
 
 <script>
-  function initSwiper() {
-    import("swiper").then(({ default: Swiper }) => {
-      import("swiper/modules").then(({ Autoplay }) => {
-        new Swiper(".mySwiper", {
-          modules: [Autoplay],
-          loop: true,
-          spaceBetween: 12,
-          speed: 8000,
-          autoplay: {
-            delay: 0,
-            disableOnInteraction: false,
-          },
-          slidesPerView: 2,
-          breakpoints: {
-            768: {
-              slidesPerView: 3,
-              spaceBetween: 16,
-            },
-          },
+  let swiperLoaded = false;
 
-          init: false,
-        }).init();
-      });
-    });
+  async function initSwiper() {
+    // ถ้าเคยโหลดแล้ว ไม่ต้องโหลดซ้ำ
+    if (swiperLoaded) return;
+    swiperLoaded = true;
+
+    try {
+      // โหลด Swiper และ Modules แบบ Dynamic
+      const [{ default: Swiper }, { Autoplay }] = await Promise.all([import("swiper"), import("swiper/modules")]);
+
+      new Swiper(".mySwiper", {
+        modules: [Autoplay],
+        loop: true,
+        spaceBetween: 12,
+        speed: 8000,
+        autoplay: {
+          delay: 0,
+          disableOnInteraction: false,
+        },
+        slidesPerView: 2,
+        breakpoints: {
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 16,
+          },
+        },
+        init: false,
+      }).init();
+    } catch (e) {
+      console.error("Swiper failed to load", e);
+    }
   }
 
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      initSwiper();
-    }, 100);
-  });
+  // 🌟 ฟังก์ชันอัจฉริยะ: เลือกโหลดตอนที่เบราว์เซอร์ว่าง (Idle) หรือคนขยับหน้าจอ
+  function triggerSwiper() {
+    if (window.requestIdleCallback) {
+      // โหลดตอนเบราว์เซอร์ว่างจริงๆ (ดีต่อคะแนน Performance)
+      requestIdleCallback(() => initSwiper(), { timeout: 2000 });
+    } else {
+      // ถ้าเบราว์เซอร์ไม่รองรับ ให้รอ 2 วินาทีแล้วโหลด
+      setTimeout(initSwiper, 2000);
+    }
+  }
 
-  document.addEventListener("astro:page-load", () => {
-    setTimeout(() => {
-      initSwiper();
-    }, 100);
+  // รองรับทั้งการเข้าเว็บปกติ และ Astro View Transitions
+  window.addEventListener("load", triggerSwiper);
+  document.addEventListener("astro:page-load", triggerSwiper);
+
+  // สำรอง: ถ้าคนเลื่อนจอก่อนที่มันจะว่าง ให้โหลดทันทีเลย
+  ["mouseover", "keydown", "touchmove", "touchstart"].forEach((event) => {
+    window.addEventListener(event, initSwiper, { once: true, passive: true });
   });
 </script>
 <style>
