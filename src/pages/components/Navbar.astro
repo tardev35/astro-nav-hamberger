@@ -1,0 +1,80 @@
+---
+import { Image } from "astro:assets";
+import mainLogo from "../../assets/PIGAUTO-LOGO.png";
+
+const currentPath = Astro.url.pathname;
+
+const isActive = (path: string) => {
+  if (path === "/") return currentPath === "/";
+
+  return currentPath.startsWith(path);
+};
+---
+
+<nav class="sticky top-0 z-50 border-b border-[#ffd700]/20 bg-[#800000] px-4 py-2 shadow-2xl">
+  <div class="mx-auto flex max-w-6xl items-center justify-between">
+    <div class="flex items-center">
+      <a href="/" aria-label="logo">
+        <Image
+          src={mainLogo}
+          alt="Pigauto logo"
+          loading="eager"
+          fetchpriority="high"
+          class="mx-auto h-auto w-full max-w-[80px] object-contain drop-shadow-xl"
+          widths={[95, 100, 150]}
+          sizes="(max-width: 150px) 120px, 300px"
+          decoding="async"
+          format="avif"
+        />
+      </a>
+    </div>
+
+    <div class="no-scrollbar flex items-center space-x-2 overflow-x-auto px-2 whitespace-nowrap">
+      <a
+        href="/"
+        class={`flex shrink-0 items-center px-4 py-2 text-[11px] lg:text-base font-bold text-white transition hover:text-yellow-400 ${isActive("/") ? "rounded-full bg-red-600 shadow-sm" : ""}`}>
+        <span class="mr-1">🏠</span>หน้าแรก
+      </a>
+
+      <a
+        href="/promotion"
+        class={`flex shrink-0 items-center px-4 py-2 text-[11px] lg:text-base font-bold text-white transition hover:text-yellow-400 ${isActive("/promotion") ? "rounded-full bg-red-600 shadow-sm" : ""}`}>
+        <span class="mr-1">⭐</span> โปรโมชั่น
+      </a>
+
+      <a
+        href="/gamedemo"
+        class={`flex shrink-0 items-center px-4 py-2 text-[11px] lg:text-base font-bold text-white transition hover:text-yellow-400 ${isActive("/gamedemo") ? "rounded-full bg-red-600 shadow-sm" : ""}`}>
+        <span class="mr-1">🎰</span> ทดลองเล่น
+      </a>
+
+      <a
+        href="/gamelogin"
+        class={`flex shrink-0 items-center px-4 py-2 text-[11px] lg:text-base font-bold text-white transition hover:text-yellow-400 ${isActive("/gamelogin") ? "rounded-full bg-red-600 shadow-sm" : ""}`}>
+        <span class="mr-1">🌐</span> ทางเข้า
+      </a>
+
+      <a
+        href="/contact"
+        class={`flex shrink-0 items-center px-4 py-2 text-[11px] lg:text-base font-bold text-white transition hover:text-yellow-400 ${isActive("/contact") ? "rounded-full bg-red-600 shadow-sm" : ""}`}>
+        <span class="mr-1">👤</span> ติดต่อ
+      </a>
+    </div>
+
+    <div class="hidden items-center space-x-2 lg:flex">
+      <a href="/signup" class="rounded-lg border border-red-400 bg-gradient-to-r from-red-600 to-red-700 px-5 py-2 text-base font-bold text-white shadow-md hover:brightness-110">👤 สมัครสมาชิก</a>
+      <a href="/signin" class="rounded-lg border border-gray-700 bg-gradient-to-b from-gray-600 to-black px-5 py-2 text-base font-bold text-white hover:bg-gray-900">🔒 เข้าสู่ระบบ</a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
